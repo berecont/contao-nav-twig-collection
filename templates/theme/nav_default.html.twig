@@ -1,0 +1,35 @@
+{# Seitenname mit InsertTags und HTML erlaubt #}
+
+<ul class="{{ level }}">
+  {% for item in items %}
+
+    {% set rawTitle = (item.page.title ?? item.data.title ?? item.title)
+      | insert_tag_raw
+      | html_decode
+    %}
+
+    {% if item.isActive %}
+      <li class="{{ item.class }}">
+        <strong class="{{ item.class }}"
+                aria-current="page"
+                {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ rawTitle|raw }}
+        </strong>
+        {{ item.subitems|raw }}
+      </li>
+    {% else %}
+      <li{% if item.class %} class="{{ item.class }}"{% endif %}>
+        <a href="{{ item.href }}"
+           title="{{ (item.page.pageTitle ?? item.data.pageTitle ?? item.pageTitle ?? (item.page.title ?? item.data.title ?? item.title))|striptags }}"
+           {% if item.class %}class="{{ item.class }}"{% endif %}
+           {% if item.accesskey is not empty %}accesskey="{{ item.accesskey }}"{% endif %}
+           {{ item.target|raw }}
+           {{ item.rel|raw }}
+           {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ rawTitle|raw }}
+        </a>
+        {{ item.subitems|raw }}
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
