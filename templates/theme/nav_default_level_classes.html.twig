@@ -1,0 +1,43 @@
+{# nav_default.html.twig #}
+{# Nutzt Bootstrap-Klassen für level_1 und level_2 und erlaubt HTML im Linktext #}
+
+{% set isTop = level == 'level_1' %}
+{% set ul_classes = (level ~ ' ' ~ (isTop ? 'navbar-nav' : 'menu navbar-dropdown'))|trim %}
+
+<ul class="{{ ul_classes }}">
+  {% for item in items %}
+
+    {# Linktext aufbereiten: InsertTags auflösen, HTML-Entities decodieren, HTML zulassen #}
+    {% set rawTitle = (item.page.title ?? item.data.title ?? item.title)
+      | insert_tag_raw
+      | html_decode
+    %}
+
+    {# Klassen je nach Level #}
+    {% set li_class = (item.class ~ ' ' ~ (isTop ? 'nav-item' : 'dropdown-item'))|trim %}
+    {% set link_class = (item.class ~ ' ' ~ (isTop ? 'nav-link' : 'dropdown-link'))|trim %}
+
+    <li{% if li_class %} class="{{ li_class }}"{% endif %}>
+      {% if item.isActive %}
+        <strong class="{{ link_class }}"
+                aria-current="page"
+                {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ rawTitle|raw }}
+        </strong>
+        {{ item.subitems|default('')|raw }}
+      {% else %}
+        <a href="{{ item.href }}"
+           title="{{ (item.page.pageTitle ?? item.data.pageTitle ?? item.pageTitle ?? (item.page.title ?? item.data.title ?? item.title))|striptags }}"
+           class="{{ link_class }}"
+           {% if item.accesskey is not empty %}accesskey="{{ item.accesskey }}"{% endif %}
+           {{ item.target|raw }}
+           {{ item.rel|raw }}
+           {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ rawTitle|raw }}
+        </a>
+        {{ item.subitems|default('')|raw }}
+      {% endif %}
+    </li>
+
+  {% endfor %}
+</ul>
