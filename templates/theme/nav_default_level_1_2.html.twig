@@ -1,0 +1,34 @@
+{# nav_default.html.twig #}
+{# Annahmen: Variablen wie in Contao: level, items[] mit keys:
+   isActive, class, href, pageTitle, title, accesskey, target, rel, link, subitems #}
+
+{% set isTop = level == 'level_1' %}
+{% set ul_classes = (level ~ ' ' ~ (isTop ? 'navbar-nav' : 'menu navbar-dropdown'))|trim %}
+
+<ul class="{{ ul_classes }}">
+  {% for item in items %}
+    {% set li_class = (item.class ~ ' ' ~ (isTop ? 'nav-item' : 'dropdown-item'))|trim %}
+    {% set link_class = (item.class ~ ' ' ~ (isTop ? 'nav-link' : 'dropdown-link'))|trim %}
+
+    <li{% if li_class %} class="{{ li_class }}"{% endif %}>
+      {% if item.isActive %}
+        <strong class="{{ link_class }}"
+                aria-current="page"
+                {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ item.link|raw }}
+        </strong>
+      {% else %}
+        <a href="{{ item.href }}"
+           title="{{ item.pageTitle ?: item.title }}"
+           class="{{ link_class }}"
+           {% if item.accesskey is not same as('') %}accesskey="{{ item.accesskey }}"{% endif %}
+           {{ item.target|raw }}{{ (item.rel ?? '')|raw }}
+           {% if item.subitems is not empty %}aria-haspopup="true"{% endif %}>
+          {{ item.link|raw }}
+        </a>
+      {% endif %}
+
+      {{ item.subitems|default('')|raw }}
+    </li>
+  {% endfor %}
+</ul>
