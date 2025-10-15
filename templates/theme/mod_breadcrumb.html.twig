@@ -1,0 +1,50 @@
+{% extends '@Contao/block_searchable' %}
+
+{% block content %}
+
+{% set wrapperAttrs = attrs()
+    .set('aria-label', 'MSC.breadcrumbMenu'|trans({}, 'contao_default'))
+%}
+
+<!-- indexer::stop -->
+<nav{{ wrapperAttrs }}>
+
+    <ul>
+      {% for item in items %}
+        {# Nur anzeigen, wenn kein Root-Element #}
+        {# HTML erlaubt #}
+        {% set rawTitle = (item.page.title ?? item.data.title ?? item.title)
+        | insert_tag_raw
+        | html_decode
+        %}        
+        {% if not (item.isRoot is defined and item.isRoot) %}
+
+          {% set liClass = (item.class ?? '') ~ (item.isActive ? ' active' : '') %}
+
+          {% if item.isActive %}
+            <li{% if liClass|trim %} class="{{ liClass|trim }}"{% endif %} aria-current="page">
+              {{ rawTitle|raw }}
+            </li>
+          {% else %}
+            <li{% if liClass|trim %} class="{{ liClass|trim }}"{% endif %}>
+              <a href="{{ item.href }}"
+                 {% if item.accesskey is defined and item.accesskey %}accesskey="{{ item.accesskey }}"{% endif %}
+                 {{ item.target|default('')|raw }}
+                 {{ item.rel|default('')|raw }}>
+                {{ rawTitle|raw }}
+              </a>
+            </li>
+          {% endif %}
+
+        {% endif %}
+      {% endfor %}
+    </ul>
+  
+</nav>
+<!-- indexer::continue -->
+
+{% endblock %}
+
+{% if schemaOrgData is defined %}
+  {% do add_schema_org(schemaOrgData) %}
+{% endif %}
