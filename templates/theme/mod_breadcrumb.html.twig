@@ -1,9 +1,10 @@
+{% trans_default_domain "contao_default" %}
 {% extends '@Contao/block_searchable' %}
 
 {% block content %}
 
 {% set wrapperAttrs = attrs()
-    .set('aria-label', 'MSC.breadcrumbMenu'|trans({}, 'contao_default'))
+    .set('aria-label', 'MSC.breadcrumbMenu'|trans)
 %}
 
 <!-- indexer::stop -->
